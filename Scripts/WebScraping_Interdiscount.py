@@ -1,35 +1,38 @@
 # 13.03.2024
 
-# pip install selenium
 # Load libraries, and print selenium version
 import selenium
 import time
 import re
 from datetime import datetime
 import pandas as pd
-print(f'{selenium.__version__=}')
-
-########################################################################################################################
 
 from selenium.webdriver.common.by import By
 from selenium import webdriver
+
+print(f'{selenium.__version__=}')
+
 driver = webdriver.Chrome()
 
 # Create an empty pandas DataFrame
 df = pd.DataFrame(columns=["brand", "model", "price", "memory", "screen", "camera", "network", "color", "date"])
 
-for i in range(1):
-    url = f"https://www.interdiscount.ch/de/search?search=Smartphone&page={i + 1}"
+# Number of pages to load (there are 15 max in this source)
+pages = 1
+
+for i in range(pages):
+    url = f"https://www.interdiscount.ch/de/smartphone--c411000?page={i + 1}"
     print(url)
     driver.get(url)
 
     # Add a delay to give the page time to load
     time.sleep(2)
 
-    phones = driver.find_elements(By.CLASS_NAME, '_3UBePl._1Tqbve._1Z-HSp._1__h-Q._368eQg')
+    # These class names will change when the CSS file is updated by the developers!
+    phones = driver.find_elements(By.CLASS_NAME, '_3oe9VX')
 
     for phone in phones:
-        price_raw = phone.find_element(By.XPATH, './/div[@class="krweWr _19DrBd"]/div').text
+        price_raw = phone.find_element(By.XPATH, '//*[@id="TOP_OF_PRODUCTS_LIST"]/div[4]/div[3]/div/a/div[2]/div[1]/div/div').text
         title_element = phone.find_element(By.CLASS_NAME, 'uIyEJC')
 
         # Extract title from title element:
@@ -87,7 +90,7 @@ for i in range(1):
             "camera": camera,
             "network": network,
             "color": color,
-            "date": pd.to_datetime(datetime.today().strftime('%Y-%m-%d'))  # Add current date
+            "date": pd.to_datetime(datetime.today().strftime('%Y-%m-%d')).date()  # Add current date
         }
 
         # Append phone data to the DataFrame
@@ -102,6 +105,10 @@ for i in range(1):
         print(f"Camera: {camera}")
         print(f"Network: {network}")
         print(f"Color: {color}")
-        print(f"Date: {pd.to_datetime(datetime.today().strftime('%Y-%m-%d'))}")
+        print(f"Date: {pd.to_datetime(datetime.today().strftime('%Y-%m-%d')).date()}")
         print("-" * 30)
 
+# Save df as CSV file
+file_name = "interdiscount_scraped.csv"
+# Save the DataFrame to CSV in the same directory as the script
+df.to_csv(file_name, index=False)
