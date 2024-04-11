@@ -1,4 +1,4 @@
-# 23.03.2024
+# 10.04.2024
 
 # Load libraries, and print selenium version
 import selenium
@@ -10,6 +10,10 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
+import warnings
+
+# To prevent FutureWarnings from displaying
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option("detach", True)
@@ -53,20 +57,28 @@ for i in range(pages):
 
     for phone in phones:
         print(f"Current page: {i+1}")
-        price_raw = phone.find_element(By.XPATH,
-                                       '//*[@id="TOP_OF_PRODUCTS_LIST"]/div[4]/div[3]/div/a/div[2]/div[1]/div/div').text
+
+        # Extract price:
+        try:
+            # Find the price element by class name
+            price_element = phone.find_element(By.CLASS_NAME, '_3H04_H')
+            price_raw = price_element.text
+
+            cleaned_price = re.sub(r'CHF|\.\u2013', '', price_raw).strip()
+            # Remove "'" character for thousands separator
+            cleaned_price = cleaned_price.replace("'", "")
+
+            # Convert the cleaned price into a float
+            price = float(cleaned_price)
+
+        except NoSuchElementException:
+            # Handle NoSuchElementException
+            price = None
+
         title_element = phone.find_element(By.CLASS_NAME, 'uIyEJC')
 
         # Extract title from title element:
         title_raw = title_element.get_attribute("title")
-
-        # Extract numerical value from price string
-        price_match = re.search(r'(\d[\'\d]*)', price_raw)
-        if price_match:
-            # Remove the thousands separator
-            price = float(price_match.group().replace("'", ""))
-        else:
-            price = None
 
         # Extract brand
         brand_match = re.match(r'^(\w+)', title_raw)
@@ -82,25 +94,29 @@ for i in range(pages):
         else:
             continue  # Skip if model is not found
 
-        # Extract memory
-        memory_match = re.search(r'(\d+\s*GB)', title_raw)
-        memory = memory_match.group(1) if memory_match else None
+        parenthesis = re.search(r"\((.*?)\)[^()]*$", title_raw).group(1)
+        parenthesis_list = parenthesis.split(", ")
 
-        # Extract screen
-        screen_match = re.search(r'(\d+(\.\d+)?")', title_raw)
-        screen = screen_match.group(1) if screen_match else None
+        memory = None
+        camera = None
+        network = None
+        screen = None
+        color_list = []
 
-        # Extract camera
-        camera_match = re.search(r'(\d+\s*MP)', title_raw)
-        camera = camera_match.group(1) if camera_match else None
+        for item in parenthesis_list:
+            if re.search(r'\d+\s*(?:GB|TB|MB)', item):
+                memory = item
+            elif re.search(r'\d+\s*MP', item):
+                camera = item
+            elif re.search(r'\d+G\b', item):
+                network = item
+            elif re.search(r'^\d+$', item) or re.search(r'^[^a-zA-Z]+$', item):
+                # Checks if the string contains only digits or other characters
+                screen = item
+            else:
+                color_list.append(item)
 
-        # Extract network
-        network_match = re.search(r'\b(4G|5G)\b', title_raw)
-        network = network_match.group(1) if network_match else None
-
-        # Extract color
-        color_match = re.search(r',\s*([^,()]+)', title_raw)
-        color = color_match.group(1) if color_match else None
+            color = ", ".join(color_list)
 
         # Extracting additional information link
         additional_info_link = phone.find_element(By.CLASS_NAME, 'Q_opE0').get_attribute('href')
@@ -153,6 +169,7 @@ for i in range(pages):
         except IndexError:
             pickup_time = None
 
+
         ### Create a dictionary to store phone data ###
         phone_data = {
             "id": id,
@@ -168,28 +185,31 @@ for i in range(pages):
             "rating": rating,
             "delivery_time": delivery_time,
             "pickup_time": pickup_time,
-            "date": pd.to_datetime(datetime.today().strftime('%Y-%m-%d')).date()  # Add current date
+            "date": pd.to_datetime(datetime.today().strftime('%Y-%m-%d')).date(), # Add current date
+            "webpage": additional_info_link
         }
 
         # Append phone data to the DataFrame
         df = df._append(phone_data, ignore_index=True)
 
         ### Print the extracted information ###
-        print(f"ID: {id}")
-        print(f"Brand: {brand}")
-        print(f"Model: {model}")
-        print(f"Price: {price}")
-        print(f"Memory: {memory}")
-        print(f"Screen: {screen}")
-        print(f"Camera: {camera}")
-        print(f"Network: {network}")
-        print(f"Color: {color}")
-        print(f"Date: {pd.to_datetime(datetime.today().strftime('%Y-%m-%d')).date()}")
-        print(f"Additional link: {additional_info_link}")
-        print(f"Nr. reviews: {number_reviews}")
-        print(f"Rating: {rating}")
-        print(f"Delivery address time: {delivery_time}")
-        print(f"Store pickup time: {pickup_time}")
+        # print(parenthesis)
+        # print(f"ID: {id}")
+        # print(f"Brand: {brand}")
+        # print(f"Model: {model}")
+        # print(f"Raw: {price_raw}")
+        # print(f"Price: {price}")
+        # print(f"Memory: {memory}")
+        # print(f"Screen: {screen}")
+        # print(f"Camera: {camera}")
+        # print(f"Network: {network}")
+        # print(f"Color: {color}")
+        # print(f"Date: {pd.to_datetime(datetime.today().strftime('%Y-%m-%d')).date()}")
+        # print(f"Additional link: {additional_info_link}")
+        # print(f"Nr. reviews: {number_reviews}")
+        # print(f"Rating: {rating}")
+        # print(f"Delivery address time: {delivery_time}")
+        # print(f"Store pickup time: {pickup_time}")
         print("-" * 30)
 
 driver2.close()
@@ -199,9 +219,9 @@ print("--- Drivers closed ---")
 print("--- Saving CSV ... ---")
 
 # Save df as CSV file
-file_name = "interdiscount_scraped.csv"
+file_name = "Archive/interdiscount_scraped.csv"
+# Save the DataFrame to CSV in the same directory as the script
+df.to_csv(file_name, index=False)
 
 print("--- CSV file saved ---")
 
-# Save the DataFrame to CSV in the same directory as the script
-df.to_csv(file_name, index=False)
