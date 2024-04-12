@@ -219,7 +219,7 @@ print("--- Drivers closed ---")
 print("--- Saving CSV ... ---")
 
 # Save df as CSV file
-file_name = "Archive/interdiscount_scraped.csv"
+file_name = "interdiscount_scraped.csv"
 # Save the DataFrame to CSV in the same directory as the script
 df.to_csv(file_name, index=False)
 

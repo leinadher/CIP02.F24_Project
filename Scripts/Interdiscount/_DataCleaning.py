@@ -3,7 +3,7 @@
 import re
 import pandas as pd
 import warnings
-from DeliveryPickupTime import convert_delivery_time, convert_pickup_time
+from _DeliveryPickupTime import convert_delivery_time, convert_pickup_time
 
 # To prevent FutureWarnings from displaying
 warnings.simplefilter(action='ignore', category=FutureWarning)
