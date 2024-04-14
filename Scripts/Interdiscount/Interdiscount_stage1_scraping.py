@@ -215,13 +215,17 @@ for i in range(pages):
 driver2.close()
 driver.close()
 
-print("--- Drivers closed ---")
+print("--- Drivers clgosed ---")
 print("--- Saving CSV ... ---")
 
+########################################################################################################################
+
 # Save df as CSV file
-file_name = "interdiscount_scraped.csv"
+file_name = "data/Interdiscount_stage1.csv"
 # Save the DataFrame to CSV in the same directory as the script
 df.to_csv(file_name, index=False)
 
-print("--- CSV file saved ---")
-
+print("-" * 30)
+print("----------  STAGE 1 ----------")
+print("------- CSV file saved -------")
+print("-" * 30)
