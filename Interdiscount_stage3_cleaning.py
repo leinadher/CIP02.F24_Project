@@ -9,7 +9,7 @@ from _TranslateColors import translate_and_lowercase, corrector
 # To prevent FutureWarnings from displaying
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-df_interdiscount = pd.read_csv("data/Interdiscount_stage1.csv")
+df_interdiscount = pd.read_csv("../Data/Interdiscount_stage1.csv")
 
 ########################################################################################################################
 
@@ -39,6 +39,10 @@ df_interdiscount['color'] = df_interdiscount['color'].apply(corrector)
 # RATING AS FLOAT
 df_interdiscount['rating'] = df_interdiscount['rating'].astype(float)
 
+# NUMBER OF REVIEWS
+# Replacing missing values with 0s, as it represents no reviews
+df_interdiscount['number_reviews'] = df_interdiscount['number_reviews'].fillna(0).astype(int)
+
 # DELIVERY TIME AS INTEGER
 df_interdiscount['delivery_time'] = [convert_delivery_time(i) for i in df_interdiscount['delivery_time']]
 df_interdiscount['delivery_time'] = df_interdiscount['delivery_time'].astype(pd.Int64Dtype())
@@ -52,7 +56,7 @@ df_interdiscount['delivery_time'] = df_interdiscount['pickup_time'].astype(pd.In
 # FIXING "NOTHING" BRAND DATA
 # Models of the "NOTHING" brand contain parenthesis
 # Because previous regex was looking for a parenthesis structure in the title, all other fields were filed in wrongly
-# The following code repairs these rows by generating the data from different sources
+# The following code repairs these rows by generating the Data from different sources
 
 # Function to extract the 'model'
 def extract_model(url):
@@ -83,7 +87,7 @@ df_interdiscount.loc[nothing_rows.index, 'network'] = nothing_rows['network'].ap
 ########################################################################################################################
 
 # Save df_interdiscount as CSV file
-file_name = "data/Interdiscount_stage3_1.csv"
+file_name = "../Data/Interdiscount_stage3_1.csv"
 # Save the DataFrame to CSV in the same directory as the script
 df_interdiscount.to_csv(file_name, index=False)
 

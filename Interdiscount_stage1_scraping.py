@@ -75,6 +75,7 @@ for i in range(pages):
             # Handle NoSuchElementException
             price = None
 
+        # Searching for title element in page
         title_element = phone.find_element(By.CLASS_NAME, 'uIyEJC')
 
         # Extract title from title element:
@@ -94,6 +95,7 @@ for i in range(pages):
         else:
             continue  # Skip if model is not found
 
+        # Capturing the parenthesis structure in the title
         parenthesis = re.search(r"\((.*?)\)[^()]*$", title_raw).group(1)
         parenthesis_list = parenthesis.split(", ")
 
@@ -103,6 +105,7 @@ for i in range(pages):
         screen = None
         color_list = []
 
+        # Record each item from the parenthesis structure
         for item in parenthesis_list:
             if re.search(r'\d+\s*(?:GB|TB|MB)', item):
                 memory = item
@@ -116,6 +119,7 @@ for i in range(pages):
             else:
                 color_list.append(item)
 
+            # If several colors are found, they are added to the color variable, separated with commas
             color = ", ".join(color_list)
 
         # Extracting additional information link
@@ -141,7 +145,7 @@ for i in range(pages):
         # Extract number of reviews
         try:
             number_reviews_element = driver2.find_element(By.CLASS_NAME, '_1top-m').text
-            number_reviews_match = re.search(r'\((\d+)\)', number_reviews_element)
+            number_reviews_match = re.search(r'(\d+)', number_reviews_element)
             number_reviews = int(number_reviews_match.group(1)) if number_reviews_match else None
         except NoSuchElementException:
             number_reviews = None
@@ -170,7 +174,7 @@ for i in range(pages):
             pickup_time = None
 
 
-        ### Create a dictionary to store phone data ###
+        ### Create a dictionary to store phone Data ###
         phone_data = {
             "id": id,
             "brand": brand,
@@ -189,39 +193,21 @@ for i in range(pages):
             "webpage": additional_info_link
         }
 
-        # Append phone data to the DataFrame
+        # Append phone Data to the DataFrame
         df = df._append(phone_data, ignore_index=True)
 
         ### Print the extracted information ###
-        # print(parenthesis)
-        # print(f"ID: {id}")
-        # print(f"Brand: {brand}")
-        # print(f"Model: {model}")
-        # print(f"Raw: {price_raw}")
-        # print(f"Price: {price}")
-        # print(f"Memory: {memory}")
-        # print(f"Screen: {screen}")
-        # print(f"Camera: {camera}")
-        # print(f"Network: {network}")
-        # print(f"Color: {color}")
-        # print(f"Date: {pd.to_datetime(datetime.today().strftime('%Y-%m-%d')).date()}")
-        # print(f"Additional link: {additional_info_link}")
-        # print(f"Nr. reviews: {number_reviews}")
-        # print(f"Rating: {rating}")
-        # print(f"Delivery address time: {delivery_time}")
-        # print(f"Store pickup time: {pickup_time}")
-        print("-" * 30)
 
 driver2.close()
 driver.close()
 
-print("--- Drivers clgosed ---")
+print("--- Drivers closed ---")
 print("--- Saving CSV ... ---")
 
 ########################################################################################################################
 
 # Save df as CSV file
-file_name = "data/Interdiscount_stage1.csv"
+file_name = "../Data/Interdiscount_stage1.csv"
 # Save the DataFrame to CSV in the same directory as the script
 df.to_csv(file_name, index=False)
 

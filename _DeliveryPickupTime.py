@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 
+# Simplification of string information to integers
 def convert_delivery_time(delivery_time):
     if pd.isna(delivery_time):
         return None

@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 
-df_interdiscount = pd.read_csv("data/Interdiscount_stage3_1.csv")
+df_interdiscount = pd.read_csv("../Data/Interdiscount_stage3_1.csv")
 
 ########################################################################################################################
 
@@ -70,7 +70,7 @@ df_interdiscount = df_interdiscount[new_order]
 # SAVE CSV
 
 # Save df_interdiscount as CSV file
-file_name = "data/Interdiscount_stage3_2.csv"
+file_name = "../Data/Interdiscount_stage3_2.csv"
 # Save the DataFrame to CSV in the same directory as the script
 df_interdiscount.to_csv(file_name, index=False)
 
