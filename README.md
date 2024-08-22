@@ -1,4 +1,4 @@
-# 📱 Data scraping and analysis of largest Swiss phone resellers
+# 📱 ETL Analysis of the Swiss Smartphone Market
 
 **Authors:** Daniel Herrera, Ramon Burkhard & Jack Brown
 
