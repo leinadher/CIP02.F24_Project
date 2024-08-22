@@ -1,4 +1,4 @@
-# Data scraping and analysis of largest Swiss phone resellers
+# 📱 Data scraping and analysis of largest Swiss phone resellers
 
 **Authors:** Daniel Herrera, Ramon Burkhard & Jack Brown
 
