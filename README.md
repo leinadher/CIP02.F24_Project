@@ -8,7 +8,7 @@
 
 ## 1. Project Overview
 
-The project involves full Extraction-Transform-Load (ETL) process, from the retrieval of the raw data via web scraping from 3 different Swiss electronics resellers to the analysis and reporting of the transformed and stored data. Because it is a group effort, data from the three resellers has been transformed to follow a group-agreed standardization and structure, prior to loading onto the final database. The three sources are **Galaxus**, **Interdiscount** and **MediaMarkt**.
+The project involves full Extraction-Transform-Load (ETL) process, from the retrieval of the raw data via web scraping in Python from 3 different Swiss electronics resellers to the analysis and reporting of the transformed and stored data. Because it is a group effort, data from the three resellers has been transformed to follow a group-agreed standardization and structure, prior to loading onto the final database. The three sources are **Galaxus**, **Interdiscount** and **MediaMarkt**.
 
 As the repository is maintained by myself, I have only included my own segment of the code, corresponding to the **Interdiscount** online store, as well as the final assembled dataset and exploratory data analysis in a Jupyter Notebook.
 
@@ -20,6 +20,8 @@ As the repository is maintained by myself, I have only included my own segment o
 
 ## 3. Additional notes
 
-- 📂 Working Directory: The R working directory (wd) is configured to be the directory of the file itself, ensuring it looks for the data sets there.
-- 🔄 Automatic Data Import: The R code automatically creates data frames assigned to variables from the contents of the 'Data' folder, as long as they include the `listings.csv` file. This import workflow was initially designed for a project covering multiple cities' data.
-- 🌐 API Import: The second data set, imported via API, can be found in `2023_pad_mdbas_sexe.csv` in the 'Data' folder as an alternative import source.
+- 🕸️ In all three cases, data is scraped from the website using Selenium for Python.
+- 🐼 The raw data is transformed and manipulated with Pandas dataframes.
+- 🔄 The data is merged into one cohesive dataset.
+- 🗄️ It is loaded onto a shared SQL database using the MariaDB library.
+- 📊 An exploratory analysis and report are undertaken with the data in a Jupyter Notebook.
